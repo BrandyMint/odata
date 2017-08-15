@@ -161,6 +161,13 @@ module OData
           property[node.name] = node.content
         end
         property
+      elsif klass.nil? && value_type =~ /^Collection\(#{namespace}\./
+        type_name = value_type.gsub(/^Collection\(#{namespace}\.(.+)\)$/, '\1')
+        property = ::OData::ComplexType.new(name: type_name, service: service)
+        value.element_children.each do |node|
+          property[node.name] = node.content
+        end
+        property
       elsif klass.nil?
         raise RuntimeError, "Unknown property type: #{value_type}"
       else
